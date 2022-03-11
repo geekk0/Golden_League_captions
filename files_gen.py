@@ -5,33 +5,59 @@ import requests
 
 def team_score(score):
 
-    with open("Состав команд.txt", "w", encoding="utf-8") as squad_file:
-        squad_file.write(score["red_squad"][:32]+"\n"+score["blue_squad"][:32])
-        squad_file.close()
+    with open("Состав красная команда.txt", "w", encoding="utf-8") as red_squad_file:
+        red_squad_file.write(score["red_squad"])
+        red_squad_file.close()
 
-    with open("Счет.txt", "w", encoding="utf-8") as red_team_file:
+    with open("Состав синяя команда.txt", "w", encoding="utf-8") as blue_squad_file:
+        blue_squad_file.write(score["blue_squad"])
+        blue_squad_file.close()
 
-        new_block = str(score["red_set_score"])+" "+str(score["red_points_set_1"]) +\
+    with open("Счет партий.txt", "w", encoding="utf-8") as set_score_file:
+
+        new_block = str(score["red_set_score"])+"\n"+str(score["blue_set_score"])
+
+        """new_block = str(score["red_set_score"])+"  "+str(score["red_points_set_1"]) +\
             " "+str(score["red_points_set_2"])+" "+str(score["red_points_set_3"])+"\n" +\
-            str(score["blue_set_score"])+" "+str(score["blue_points_set_1"])+" " +\
-            str(score["blue_points_set_2"])+" "+str(score["blue_points_set_3"])
+            str(score["blue_set_score"])+"  "+str(score["blue_points_set_1"])+" " +\
+            str(score["blue_points_set_2"])+" "+str(score["blue_points_set_3"])"""
 
-        red_team_file.write(new_block)
-        red_team_file.close()
+        set_score_file.write(new_block)
+        set_score_file.close()
 
-    with open("Подача красных.txt", "w", encoding="utf-8") as red_inning_file:
-        with open("Подача синих.txt", "w", encoding="utf-8") as blue_inning_file:
-            if score["current_inning"] == "red":
-                red_inning_file.write(".")
-                red_inning_file.close()
-                blue_inning_file.flush()
-            elif score["current_inning"] == "blue":
-                blue_inning_file.write(".")
-                blue_inning_file.close()
-                red_inning_file.flush()
-            else:
-                blue_inning_file.flush()
-                red_inning_file.flush()
+    with open("Счет текущей партии.txt", "w", encoding="utf-8") as current_set_score_file:
+
+        active_set = score["active_set"]
+        red_points = str(score["red_points_set_"+str(active_set)])
+        blue_points = str(score["blue_points_set_"+str(active_set)])
+
+        """if len(red_points) < 2:
+            red_points = " "+red_points
+        if len(blue_points) < 2:
+            blue_points = " "+blue_points"""
+
+        new_block = str(score["red_points_set_"+str(active_set)])+"\n"+str(score["blue_points_set_"+str(active_set)])
+
+        current_set_score_file.write(new_block)
+
+    with open("Подача.txt", "w", encoding="utf-8") as active_inning_file:
+
+        if score["current_inning"] == "red":
+
+            new_block = "●"
+
+        elif score["current_inning"] == "blue":
+
+            new_block = "\n●"
+
+        else:
+
+            new_block = ""
+
+        active_inning_file.write(new_block)
+        active_inning_file.close()
+
+
 
 
 def show_time():
@@ -48,17 +74,17 @@ def show_time():
 # noinspection PyBroadException
 def get_match_data():
 
-    # url = "http://192.168.77.2/api/Пляжный волейбол/Узнать счет"          # Локальная сеть
+    url = "http://192.168.77.2/api/Пляжный волейбол/Узнать счет"          # Локальная сеть
 
     # url = "http://185.18.202.239/api/Пляжный волейбол/Узнать счет"        # Внешняя
 
     # url = "http://188.225.38.178:4000/api/Пляжный волейбол/Узнать счет"   # VDS
 
-    url = "http://127.0.0.1:8000/api/Пляжный волейбол/Узнать счет"        # Dev
+    # url = "http://127.0.0.1:8000/api/Пляжный волейбол/Узнать счет"        # Dev
 
-    raw_source = requests.get(url, auth=("admin", "123456Qe")).text
+    # raw_source = requests.get(url, auth=("admin", "123456Qe")).text
 
-    # raw_source = requests.get(url, auth=("admin", "MGZJc2SS0eYcUJsXJsq1")).text
+    raw_source = requests.get(url, auth=("admin", "MGZJc2SS0eYcUJsXJsq1")).text
 
     try:
         score = eval(raw_source)[0]
@@ -98,6 +124,8 @@ def format_score(score):
 while True:
     # os.system('hide_current_console.exe')
 
+
+
     start_time = time.time()
 
     score_dict = get_match_data()
@@ -105,6 +133,10 @@ while True:
     show_time()
 
     if score_dict:
+        with open("Подача красных.txt", "w", encoding="utf-8") as red_inning_file:
+            red_inning_file.flush()
+        with open("Подача синих.txt", "w", encoding="utf-8") as blue_inning_file:
+            blue_inning_file.flush()
         formatted_score = format_score(score_dict)
         team_score(score=formatted_score)
 
