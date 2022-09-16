@@ -108,7 +108,6 @@ def clear_file(file_name):
 
 
 while True:
-    # os.system('hide_current_console.exe')
 
     try:
         start_time = time.time()
@@ -129,4 +128,3 @@ while True:
     else:
         time.sleep(1)
 
-    # print("--- %s seconds ---" % (time.time() - start_time))
