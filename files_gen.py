@@ -1,6 +1,8 @@
 import datetime
+import json
 import time
 import requests
+import itertools
 
 
 def team_score(score):
@@ -28,17 +30,11 @@ def team_score(score):
     with open("Счет текущей партии.txt", "w", encoding="utf-8") as current_set_score_file:
 
         active_set = score["active_set"]
-        red_points = str(score["red_points_set_"+str(active_set)])
-        blue_points = str(score["blue_points_set_"+str(active_set)])
 
-        """if len(red_points) < 2:
-            red_points = " "+red_points
-        if len(blue_points) < 2:
-            blue_points = " "+blue_points"""
-
-        new_block = str(score["red_points_set_"+str(active_set)])+"\n"+str(score["blue_points_set_"+str(active_set)])
-
-        current_set_score_file.write(new_block)
+        if active_set < 4:
+            new_block = str(score["red_points_set_"+str(active_set)])+"\n" + \
+                        str(score["blue_points_set_"+str(active_set)])
+            current_set_score_file.write(new_block)
 
     with open("Подача.txt", "w", encoding="utf-8") as active_inning_file:
 
@@ -57,7 +53,21 @@ def team_score(score):
         active_inning_file.write(new_block)
         active_inning_file.close()
 
+    with open("AceOut.txt", "w", encoding="utf-8") as aceout_file:
 
+        if score["red_ace_out"] != " ":
+
+            ace_out = " "+score["red_ace_out"]+" "
+
+        elif score["blue_ace_out"] != " ":
+
+            ace_out = " "+score["blue_ace_out"]+" "
+
+        else:
+            ace_out = ""
+
+        aceout_file.write(ace_out)
+        aceout_file.close()
 
 
 def show_time():
@@ -74,25 +84,20 @@ def show_time():
 # noinspection PyBroadException
 def get_match_data():
 
-    url = "http://192.168.77.2/api/Пляжный волейбол/Узнать счет"          # Локальная сеть
+    url = "https://www.golden-league-stream.tk/api/Пляжный волейбол/Узнать счет"        # VDS
 
-    # url = "http://185.18.202.239/api/Пляжный волейбол/Узнать счет"        # Внешняя
-
-    # url = "http://188.225.38.178:4000/api/Пляжный волейбол/Узнать счет"   # VDS
-
-    # url = "http://127.0.0.1:8000/api/Пляжный волейбол/Узнать счет"        # Dev
-
-    # raw_source = requests.get(url, auth=("admin", "123456Qe")).text
-
-    raw_source = requests.get(url, auth=("admin", "MGZJc2SS0eYcUJsXJsq1")).text
+    raw_source = requests.get(url, auth=("referee", "ref12345")).text
 
     try:
-        score = eval(raw_source)[0]
+        score = json.loads(raw_source)[0]
+
+        dict(itertools.islice(score.items(), 20))
 
         return score
 
     except:
-        time.sleep(0.5)
+        time.sleep(1)
+        print("api не доступен")
 
 
 def clear_file(file_name):
@@ -102,42 +107,26 @@ def clear_file(file_name):
         time.sleep(0.5)
 
 
-def format_score(score):
-
-    if len(str(score["red_points_set_1"])) > len(str(score["blue_points_set_1"])):
-        score["blue_points_set_1"] = " " + str(score["blue_points_set_1"])
-    elif len(str(score["red_points_set_1"])) < len(str(score["blue_points_set_1"])):
-        score["red_points_set_1"] = " " + str(score["red_points_set_1"])
-
-    if len(str(score["red_points_set_2"])) > len(str(score["blue_points_set_2"])):
-        score["blue_points_set_2"] = " " + str(score["blue_points_set_2"])
-    elif len(str(score["red_points_set_2"])) < len(str(score["blue_points_set_2"])):
-        score["red_points_set_2"] = " " + str(score["red_points_set_2"])
-
-    if len(str(score["red_points_set_3"])) > len(str(score["blue_points_set_3"])):
-        score["blue_points_set_3"] = " " + str(score["blue_points_set_3"])
-    elif len(str(score["red_points_set_3"])) < len(str(score["blue_points_set_3"])):
-        score["red_points_set_3"] = " " + str(score["red_points_set_3"])
-
-    return score
-
 while True:
     # os.system('hide_current_console.exe')
 
+    try:
+        start_time = time.time()
 
+        score_dict = get_match_data()
 
-    start_time = time.time()
+        show_time()
 
-    score_dict = get_match_data()
-
-    show_time()
+    except Exception as e:
+        print(e)
 
     if score_dict:
         with open("Подача красных.txt", "w", encoding="utf-8") as red_inning_file:
             red_inning_file.flush()
         with open("Подача синих.txt", "w", encoding="utf-8") as blue_inning_file:
             blue_inning_file.flush()
-        formatted_score = format_score(score_dict)
-        team_score(score=formatted_score)
+        team_score(score=score_dict)
+    else:
+        time.sleep(1)
 
     # print("--- %s seconds ---" % (time.time() - start_time))
