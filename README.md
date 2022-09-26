@@ -5,7 +5,7 @@
 ![languages](https://img.shields.io/github/languages/top/geekk0/Golden_League_captions)
 ![last-commit](https://img.shields.io/github/last-commit/geekk0/Golden_League_captions)
 
-<br>Scripts for matches live-streaming. [Site for online-streaming]()
+<br>Scripts for matches live-streaming. [Site for online-streaming]((https://github.com/geekk0/Golden_League_site))
 
 ##Description and usage
 <br>*files_gen.exe* - Starts on pc with OBS. Script calls site api сайта and creates 5 text files, with data for scoreboard.
