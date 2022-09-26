@@ -10,41 +10,6 @@ optimized_memory = 0
 delete_list = []
 
 
-"""def get_suffix():
-    suffix = input("Введите расширение файла\n")
-
-    if len(suffix) > 4:
-        print("Какое то длинное расширение...\n")
-        get_suffix()
-    else:
-        return suffix
-
-
-def get_interval():
-    interval = input("Выберите дни или часы:\n")
-    if "дни" in interval.lower():
-        interval = "days"
-        return interval
-
-    elif "часы" in interval.lower():
-        interval = "hours"
-        return interval
-
-    else:
-        print("Вариант не распознан, введите дни или часы\n")
-        get_interval()
-
-
-def get_count():
-    count = input("Cтарше скольки?(цифрой)\n")
-    try:
-        count = int(count)
-        return count
-    except:
-        print("Ну цифрой же...")
-        get_count()"""
-
-
 def create_delete_list(suffix):
 
     global delete_list
