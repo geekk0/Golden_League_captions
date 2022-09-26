@@ -7,7 +7,7 @@
 
 <br>Scripts for matches live-streaming. [Site for online-streaming]((https://github.com/geekk0/Golden_League_site))
 
-##Description and usage
+## Description and usage
 <br>*files_gen.exe* - Starts on pc with OBS. Script calls site api сайта and creates 5 text files, with data for scoreboard.
 <br>*refresher.py* - Already running on demo-server. Generate requests for "Ace/Out" state refreshing.
 <br>*ts_files_clean.exe* - Removing outdated stream .ts files.
